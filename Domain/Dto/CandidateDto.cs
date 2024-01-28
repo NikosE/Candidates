@@ -1,6 +1,17 @@
 namespace Domain.Dto
 {
-   public record CandidateDto
+   public record CreateCandidateDto
+   (
+      string LastName,
+      string FirstName,
+      string Email,
+      int Mobile,
+      string Degree,
+      byte[] CV,
+      DateTime CreationTime
+   );
+
+   public record UpdateCandidateDto
    (
       string LastName,
       string FirstName,

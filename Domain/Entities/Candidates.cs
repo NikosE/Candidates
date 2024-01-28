@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
 
 namespace Domain.Entities
 {
@@ -17,6 +16,7 @@ namespace Domain.Entities
       [Required]
       [MaxLength(50)]
       public string Email { get; set; }
+      [MaxLength(10)]
       public int Mobile { get; set; }
       public string Degree { get; set; }
       public byte[] CV { get; set; }
