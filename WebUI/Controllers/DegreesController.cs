@@ -20,11 +20,15 @@ namespace WebUI.Controllers
          => Ok(await _degreesService.CreateDegree(dto, token));
 
       [HttpPut("{id}")]
-      public async Task<IActionResult> UpdateDegree(Guid id,  [FromBody] UpdateDegreeDto dto, CancellationToken token)
+      public async Task<IActionResult> UpdateDegree(int id,  [FromBody] UpdateDegreeDto dto, CancellationToken token)
         => Ok(await _degreesService.UpdateDegree(id, dto, token));
 
       [HttpDelete("{id}")]
-      public async Task<IActionResult> DeleteDegree(Guid id, CancellationToken token)
+      public async Task<IActionResult> DeleteDegree(int id, CancellationToken token)
         => Ok(await _degreesService.DeleteDegree(id, token));
+
+      [HttpDelete]
+      public async Task<IActionResult> ClearDegrees(CancellationToken token)
+        => Ok(await _degreesService.ClearDegrees(token));
     }
 }

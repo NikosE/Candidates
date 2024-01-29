@@ -2,11 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-   public class Degrees
+   public class Degree
     {
       #region Properties
       [Key]
-      public Guid DegreeId { get; set; }
+      public int Id { get; set; }
       [Required]
       [MaxLength(100)]
       public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace Domain.Entities
       #endregion
 
       #region Navigation Properties
-      public ICollection<Candidates> Candidates { get; set; }
+      public ICollection<Candidate> Candidates { get; set; }
 
       #endregion
     }

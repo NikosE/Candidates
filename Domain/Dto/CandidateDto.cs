@@ -5,10 +5,9 @@ namespace Domain.Dto
       string LastName,
       string FirstName,
       string Email,
-      int Mobile,
-      string Degree,
-      byte[] CV,
-      DateTime CreationTime
+      string Mobile,
+      int DegreeId,
+      byte[] CV
    );
 
    public record UpdateCandidateDto
@@ -16,31 +15,8 @@ namespace Domain.Dto
       string LastName,
       string FirstName,
       string Email,
-      int Mobile,
-      string Degree,
+      string Mobile,
+      int DegreeId,
       byte[] CV
-   );
-
-   public record ItemCandidateDto
-   (
-      string LastName,
-      string FirstName,
-      string Email,
-      int Mobile,
-      string Degree,
-      byte[] CV,
-      DateTime CreationTime
-   );
-
-public record ListItemCandidateDto
-   (
-      Guid CandidateId,
-      string LastName,
-      string FirstName,
-      string Email,
-      int Mobile,
-      string Degree,
-      byte[] CV,
-      DateTime CreationTime
    );
 }

@@ -1,29 +1,30 @@
 using Domain.Dto;
-using Domain.Entities;
 
 namespace Application.Candidate
 {
    public static class CandidatesMapping
    {
-      public static Candidates CreateCandidateModelMapping(this CreateCandidateDto dto, Degrees model) 
-      => new Candidates()
+      public static Domain.Entities.Candidate CreateCandidateModelMapping(this CreateCandidateDto dto, Domain.Entities.Degree model) 
+      => new ()
       {
          LastName = dto.LastName,
          FirstName = dto.FirstName,
          Email = dto.Email,
          Mobile = dto.Mobile,
-         Degree = model.Name,
+         DegreeId = model.Id,
+         Degree = model,
          CV = dto.CV,
          CreationTime = DateTime.Now
       };
 
-      public static void UpdateCandidateModelMapping(this UpdateCandidateDto dto, Candidates modelCandidate, Degrees modelDegree)
+      public static void UpdateCandidateModelMapping(this UpdateCandidateDto dto, Domain.Entities.Candidate modelCandidate, Domain.Entities.Degree modelDegree)
       {
          modelCandidate.LastName = dto.LastName;
          modelCandidate.FirstName = dto.FirstName;
          modelCandidate.Email = dto.Email;
          modelCandidate.Mobile = dto.Mobile;
-         modelCandidate.Degree = modelDegree.Name;
+         modelCandidate.DegreeId = modelDegree.Id;
+         modelCandidate.Degree = modelDegree;
          modelCandidate.CV = dto.CV;
       }        
    }

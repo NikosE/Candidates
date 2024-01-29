@@ -17,26 +17,11 @@ namespace Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("CandidatesDegrees", b =>
+            modelBuilder.Entity("Domain.Entities.Candidate", b =>
                 {
-                    b.Property<Guid>("CandidatesCandidateId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("DegreesDegreeId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("CandidatesCandidateId", "DegreesDegreeId");
-
-                    b.HasIndex("DegreesDegreeId");
-
-                    b.ToTable("CandidatesDegrees");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Candidates", b =>
-                {
-                    b.Property<Guid>("CandidateId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<byte[]>("CV")
                         .IsRequired()
@@ -45,9 +30,8 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Degree")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("DegreeId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -64,19 +48,23 @@ namespace Persistence.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Mobile")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
 
-                    b.HasKey("CandidateId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("DegreeId");
 
                     b.ToTable("Candidates");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Degrees", b =>
+            modelBuilder.Entity("Domain.Entities.Degree", b =>
                 {
-                    b.Property<Guid>("DegreeId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("TEXT");
@@ -86,24 +74,25 @@ namespace Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("DegreeId");
+                    b.HasKey("Id");
 
                     b.ToTable("Degrees");
                 });
 
-            modelBuilder.Entity("CandidatesDegrees", b =>
+            modelBuilder.Entity("Domain.Entities.Candidate", b =>
                 {
-                    b.HasOne("Domain.Entities.Candidates", null)
-                        .WithMany()
-                        .HasForeignKey("CandidatesCandidateId")
+                    b.HasOne("Domain.Entities.Degree", "Degree")
+                        .WithMany("Candidates")
+                        .HasForeignKey("DegreeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Degrees", null)
-                        .WithMany()
-                        .HasForeignKey("DegreesDegreeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Degree");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Degree", b =>
+                {
+                    b.Navigation("Candidates");
                 });
 #pragma warning restore 612, 618
         }

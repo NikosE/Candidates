@@ -5,8 +5,12 @@ namespace Application.Candidate
 {
    public interface ICandidatesService
    {
-      Task<CommandResponse<string>> CreateCandidate (CreateCandidateDto dto, Guid DegreeId, CancellationToken token);
-      Task<CommandResponse<string>> UpdateCandidate (Guid CandidateId, string degreeName, UpdateCandidateDto dto, CancellationToken token);
-      Task<CommandResponse<string>> DeleteCandidate (Guid CandidateId, CancellationToken token);        
+      Task<ListResponse<List<DegreesCandidatesDto>>> GetDegreesCandidates(CancellationToken token);
+      
+      Task<CommandResponse<string>> CreateCandidate (CreateCandidateDto dto, CancellationToken token);
+      
+      Task<CommandResponse<string>> UpdateCandidate (int id, UpdateCandidateDto dto, CancellationToken token);
+      
+      Task<CommandResponse<string>> DeleteCandidate (int id, CancellationToken token);        
    }
 }

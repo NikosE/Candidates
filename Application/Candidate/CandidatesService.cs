@@ -1,6 +1,8 @@
+using Application.Degree;
+using Application.Validators;
 using Domain.Dto;
 using Domain.Dto.Common;
-using Domain.Entities;
+using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -15,45 +17,85 @@ namespace Application.Candidate
          
       }
 
-      public async Task<CommandResponse<string>> CreateCandidate(CreateCandidateDto dto,Guid DegreeId, CancellationToken token)
+      public async Task<ListResponse<List<DegreesCandidatesDto>>> GetDegreesCandidates(CancellationToken token)
       {
+         var candidatesDegrees = await _context.Candidates.Include(x => x.Degree).ToListAsync(token);
+
+         var degrees = candidatesDegrees.Select(x => x.Degree).ToList();
+
+         var dto = degrees.Select(x => x.GetCandidateDegreeModelMapping()).ToList();
+
+         return new ListResponse<List<DegreesCandidatesDto>>().WithData(dto);
+      }
+
+      public async Task<CommandResponse<string>> CreateCandidate(CreateCandidateDto dto, CancellationToken token)
+      {
+         var validator = new CreateCandidateDtoValidator();
+         var validationResult = validator.Validate(dto);
+
+         if (!validationResult.IsValid)
+         {
+            // Concatenate error messages from validation results
+            string errorMessage = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
+            return new CommandResponse<string>().WithData(errorMessage);
+         }
+
+
          // Searching Degree
-         var degree = await _context.Degrees.SingleOrDefaultAsync(x => x.DegreeId == DegreeId);
+         var degree = await _context.Degrees.SingleOrDefaultAsync(x => x.Id == dto.DegreeId, cancellationToken: token);
          if (degree is null) throw new Exception("Το πτυχίο δεν βρέθηκε");
 
          //Mapping and Saving
          var candidate = dto.CreateCandidateModelMapping(degree);
-         await _context.Candidates.AddAsync(candidate);
+         await _context.Candidates.AddAsync(candidate, cancellationToken: token);
          var result = await _context.SaveChangesAsync(token) > 0;
+
+         if (!result) throw new Exception("Ανεπιτυχής αποθήκευση υποψηφίου");
 
          // Initializing object
          return new CommandResponse<string>()
-            .WithSuccess(result)
             .WithData($"Η εισαγωγή του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
       }
 
-      public async Task<CommandResponse<string>> UpdateCandidate(Guid CandidateId, string degreeName, UpdateCandidateDto dto, CancellationToken token)
+      public async Task<CommandResponse<string>> UpdateCandidate(int id, UpdateCandidateDto dto, CancellationToken token)
       {
+         var validator = new UpdateCandidateDtoValidator();
+         var validationResult = validator.Validate(dto);
+
+         // if (!validationResult.IsValid)
+         // {
+         //    // Concatenate error messages from validation results
+         //    string errorMessage = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
+         //    return new CommandResponse<string>().WithData(errorMessage);
+         // }
+
          // Searching Item
-         var candidate = await _context.Candidates.Where(x => x.CandidateId == CandidateId).Include(x => x.Degree).FirstOrDefaultAsync(token);
+         var candidate = await _context.Candidates.Where(x => x.Id == id).SingleOrDefaultAsync(token);
 
          // Checking for Exceptions
          if (candidate is null) throw new Exception("Ο υποψήφιος δεν βρέθηκε");
 
+         // Searching Item
+         var degree = await _context.Degrees.SingleOrDefaultAsync(x => x.Id == id, cancellationToken: token);
+
+         // Checking for Exceptions
+         if (degree is null) throw new Exception("Το πτυχίο δεν βρέθηκε");
+
          // Mapping and Saving
-         dto.UpdateCandidateModelMapping(candidate);
+         dto.UpdateCandidateModelMapping(candidate, degree);
          var result = await _context.SaveChangesAsync(token) > 0;
+
+         if (!result) throw new Exception("Ανεπιτυχής ενημέρωση υποψηφίου");
 
          // Initializing object
          return new CommandResponse<string>()
-            .WithSuccess(result)
             .WithData($"Η ενημέρωση του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
       }
 
-      public async Task<CommandResponse<string>> DeleteCandidate(Guid CandidateId, CancellationToken token)
+      public async Task<CommandResponse<string>> DeleteCandidate(int id, CancellationToken token)
       {
          // Searching Item
-         var candidate = await _context.Candidates.Where(x => x.CandidateId == CandidateId).FirstOrDefaultAsync(token);
+         var candidate = await _context.Candidates.Where(x => x.Id == id).SingleOrDefaultAsync(token);
 
          // Checking for Exceptions
          if (candidate is null) throw new Exception("Ο υποψήφιος δεν βρέθηκε");
@@ -62,10 +104,11 @@ namespace Application.Candidate
          _context.Candidates.Remove(candidate);
          var result = await _context.SaveChangesAsync(token) > 0;
 
+         if (!result) throw new Exception("Ανεπιτυχής διαγραφή υποψηφίου");
+
         // Initializing object
          return new CommandResponse<string>()
-            .WithSuccess(result)
             .WithData($"Η διαγραφή του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
-      }      
+      }
    }
 }

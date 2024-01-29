@@ -9,7 +9,7 @@ namespace Persistence
       {
       }
 
-      public DbSet<Candidates> Candidates { get; set; }
-      public DbSet<Degrees> Degrees { get; set; }
+      public DbSet<Candidate> Candidates { get; set; }
+      public DbSet<Degree> Degrees { get; set; }
    }
 }

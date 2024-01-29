@@ -15,16 +15,20 @@ namespace WebUI.Controllers
          _candidatesService = candidatesService;
       }
 
+      [HttpGet]
+      public async Task<IActionResult> GetDegreesCandidates(CancellationToken token)
+         => Ok(await _candidatesService.GetDegreesCandidates(token));
+
       [HttpPost]
       public async Task<IActionResult> CreateCandidate([FromBody] CreateCandidateDto dto, CancellationToken token)
          => Ok(await _candidatesService.CreateCandidate(dto, token));
 
       [HttpPut("{id}")]
-      public async Task<IActionResult> UpdateCandidate(Guid id,  [FromBody] UpdateCandidateDto dto, CancellationToken token)
+      public async Task<IActionResult> UpdateCandidate(int id,  [FromBody] UpdateCandidateDto dto, CancellationToken token)
         => Ok(await _candidatesService.UpdateCandidate(id, dto, token));
 
       [HttpDelete("{id}")]
-      public async Task<IActionResult> DeleteCandidate(Guid id, CancellationToken token)
+      public async Task<IActionResult> DeleteCandidate(int id, CancellationToken token)
         => Ok(await _candidatesService.DeleteCandidate(id, token));
    }
 }
