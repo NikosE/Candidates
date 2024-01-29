@@ -15,6 +15,10 @@ namespace WebUI.Controllers
          _degreesService = degreesService;
       }
 
+      [HttpGet]
+      public async Task<IActionResult> GetAll(CancellationToken token)
+        => Ok(await _degreesService.GetDegreesAll(token));
+
       [HttpPost]
       public async Task<IActionResult> CreateDegree([FromBody] CreateDegreeDto dto, CancellationToken token)
          => Ok(await _degreesService.CreateDegree(dto, token));

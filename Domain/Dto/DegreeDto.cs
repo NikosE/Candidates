@@ -5,4 +5,6 @@ namespace Domain.Dto
    public record UpdateDegreeDto(string Name);
 
    public record DegreesCandidatesDto(string Name);
+
+   public record ItemDegreesDto(int Id, string Name);
 }

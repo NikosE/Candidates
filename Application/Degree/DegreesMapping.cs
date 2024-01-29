@@ -1,5 +1,4 @@
 using Domain.Dto;
-using Domain.Entities;
 
 namespace Application.Degree
 {
@@ -20,6 +19,12 @@ namespace Application.Degree
       public static DegreesCandidatesDto GetCandidateDegreeModelMapping(this Domain.Entities.Degree model)
       => new (
          Name : model.Name
+      );
+
+      public static ItemDegreesDto ListDegreeDtoMapping(this Domain.Entities.Degree model)
+      => new (
+         Id: model.Id,
+         Name: model.Name
       );
    }
 }

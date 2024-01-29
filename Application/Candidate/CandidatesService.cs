@@ -2,7 +2,6 @@ using Application.Degree;
 using Application.Validators;
 using Domain.Dto;
 using Domain.Dto.Common;
-using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -17,7 +16,7 @@ namespace Application.Candidate
          
       }
 
-      public async Task<ListResponse<List<DegreesCandidatesDto>>> GetDegreesCandidates(CancellationToken token)
+      public async Task<Response<List<DegreesCandidatesDto>>> GetDegreesCandidates(CancellationToken token)
       {
          var candidatesDegrees = await _context.Candidates.Include(x => x.Degree).ToListAsync(token);
 
@@ -25,10 +24,10 @@ namespace Application.Candidate
 
          var dto = degrees.Select(x => x.GetCandidateDegreeModelMapping()).ToList();
 
-         return new ListResponse<List<DegreesCandidatesDto>>().WithData(dto);
+         return new Response<List<DegreesCandidatesDto>>().WithData(dto);
       }
 
-      public async Task<CommandResponse<string>> CreateCandidate(CreateCandidateDto dto, CancellationToken token)
+      public async Task<Response<string>> CreateCandidate(CreateCandidateDto dto, CancellationToken token)
       {
          var validator = new CreateCandidateDtoValidator();
          var validationResult = validator.Validate(dto);
@@ -37,7 +36,7 @@ namespace Application.Candidate
          {
             // Concatenate error messages from validation results
             string errorMessage = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
-            return new CommandResponse<string>().WithData(errorMessage);
+            return new Response<string>().WithData(errorMessage);
          }
 
 
@@ -53,21 +52,21 @@ namespace Application.Candidate
          if (!result) throw new Exception("Ανεπιτυχής αποθήκευση υποψηφίου");
 
          // Initializing object
-         return new CommandResponse<string>()
+         return new Response<string>()
             .WithData($"Η εισαγωγή του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
       }
 
-      public async Task<CommandResponse<string>> UpdateCandidate(int id, UpdateCandidateDto dto, CancellationToken token)
+      public async Task<Response<string>> UpdateCandidate(int id, UpdateCandidateDto dto, CancellationToken token)
       {
          var validator = new UpdateCandidateDtoValidator();
          var validationResult = validator.Validate(dto);
 
-         // if (!validationResult.IsValid)
-         // {
-         //    // Concatenate error messages from validation results
-         //    string errorMessage = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
-         //    return new CommandResponse<string>().WithData(errorMessage);
-         // }
+         if (!validationResult.IsValid)
+         {
+            // Concatenate error messages from validation results
+            string errorMessage = string.Join(Environment.NewLine, validationResult.Errors.Select(e => e.ErrorMessage));
+            return new Response<string>().WithData(errorMessage);
+         }
 
          // Searching Item
          var candidate = await _context.Candidates.Where(x => x.Id == id).SingleOrDefaultAsync(token);
@@ -88,11 +87,11 @@ namespace Application.Candidate
          if (!result) throw new Exception("Ανεπιτυχής ενημέρωση υποψηφίου");
 
          // Initializing object
-         return new CommandResponse<string>()
+         return new Response<string>()
             .WithData($"Η ενημέρωση του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
       }
 
-      public async Task<CommandResponse<string>> DeleteCandidate(int id, CancellationToken token)
+      public async Task<Response<string>> DeleteCandidate(int id, CancellationToken token)
       {
          // Searching Item
          var candidate = await _context.Candidates.Where(x => x.Id == id).SingleOrDefaultAsync(token);
@@ -107,7 +106,7 @@ namespace Application.Candidate
          if (!result) throw new Exception("Ανεπιτυχής διαγραφή υποψηφίου");
 
         // Initializing object
-         return new CommandResponse<string>()
+         return new Response<string>()
             .WithData($"Η διαγραφή του υποψήφιου με όνομα {candidate.FirstName} {candidate.LastName} ολοκληρώθηκε επιτυχώς");
       }
    }
